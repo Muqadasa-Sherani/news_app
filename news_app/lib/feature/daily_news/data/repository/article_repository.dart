@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:dio/src/dio_exception.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:news_app/core/constants/constants.dart';
 import 'package:news_app/core/resources/data_state.dart';
 import 'package:news_app/feature/daily_news/data/data_sources/remote/news_api_service.dart';
@@ -24,13 +26,14 @@ class ArticleRepositoryImpl implements ArticleRepository {
       if (HttpResponse.response.statusCode == HttpStatus.ok) {
         return DataSuccess(HttpResponse.data);
       } else {
-        return DataFailed(DioError(
-            error: HttpResponse.response.statusMessage,
-            response: HttpResponse.response,
-            type: DioErrorType.response,
-            requestOptions: HttpResponse.response.requestOptions));
+        return DataFailed(HttpResponse.response.statusMessage as DioException);
+        // DioException(
+        //   error: HttpResponse.response.statusMessage,
+        //   response: HttpResponse.response,
+        //   type: DioException.response,
+        //   requestOptions: HttpResponse.response.requestOptions));
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       return DataFailed(e);
     }
   }
